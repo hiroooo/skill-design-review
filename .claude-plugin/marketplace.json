@@ -1,0 +1,31 @@
+{
+  "name": "hiroooo-skill-design-review",
+  "owner": {
+    "name": "hiroooo",
+    "url": "https://github.com/hiroooo"
+  },
+  "plugins": [
+    {
+      "name": "design-review",
+      "source": ".",
+      "description": "Web / iOS / Android の UI を 10 軸 + 1 行コメントで採点。色覚 simulation / focus crop + バッジ / 用語 tooltip / dark mode / PDF 印刷対応のダッシュボード型レポート HTML を出力。",
+      "version": "1.0.0",
+      "license": "MIT",
+      "keywords": [
+        "design",
+        "audit",
+        "ux",
+        "ui",
+        "review",
+        "accessibility",
+        "wcag",
+        "color-vision",
+        "scorecard",
+        "claude-code"
+      ],
+      "skills": [
+        "./"
+      ]
+    }
+  ]
+}

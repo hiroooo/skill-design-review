@@ -1,0 +1,17 @@
+.DS_Store
+node_modules/
+*.log
+
+# secrets / personal
+.env
+.env.*
+*.key
+*.pem
+*.p8
+*.p12
+secrets/
+private/
+
+# Claude personal / runtime artifacts
+.scratch/
+.playwright-mcp/

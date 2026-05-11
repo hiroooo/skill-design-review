@@ -1,0 +1,2107 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Design Review — Sublog LP — hiroooo.github.io/sublog/</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+<style>
+:root {
+  --bg: #f7f8fa;
+  --surface: #ffffff;
+  --surface-2: #f3f4f6;
+  --ink: #0a0a0f;
+  --ink-2: #1f2937;
+  --muted: #6b7280;
+  --muted-2: #9ca3af;
+  --line: #e5e7eb;
+  --line-soft: #f0f1f3;
+  --accent: #4f46e5;
+  --accent-soft: #eef2ff;
+  --high: #dc2626;
+  --high-soft: #fee2e2;
+  --medium: #d97706;
+  --medium-soft: #fef3c7;
+  --low: #6b7280;
+  --low-soft: #f3f4f6;
+  --good: #059669;
+  --good-soft: #d1fae5;
+
+  --sans: -apple-system, BlinkMacSystemFont, "Inter", "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+  --serif: "Iowan Old Style", "Apple Garamond", Georgia, "Hiragino Mincho ProN", serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.6;
+  letter-spacing: -0.005em;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* Inline icon helpers (Lucide-inspired). icon は実 svg を inline で展開 */
+.icon {
+  display: inline-flex;
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+  vertical-align: -0.125em;
+}
+.icon svg { width: 100%; height: 100%; }
+
+/* ============================================================
+   Shell : sidebar + main (dashboard layout)
+   ============================================================ */
+.shell {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--line);
+  padding: 20px 16px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.sidebar .brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 8px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.sidebar .brand .brand-mark {
+  width: 28px;
+  height: 28px;
+  background: var(--ink);
+  color: var(--surface);
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sidebar .brand .brand-mark .icon { width: 16px; height: 16px; }
+.sidebar .brand .brand-name {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.sidebar .brand .brand-sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 1px;
+}
+
+.sidebar .group-label {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 0 8px;
+  margin-bottom: 6px;
+}
+
+.sidebar nav { display: flex; flex-direction: column; gap: 1px; }
+.sidebar nav a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 8px;
+  border-radius: var(--radius-sm);
+  color: var(--ink-2);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.12s;
+}
+.sidebar nav a .icon {
+  width: 15px;
+  height: 15px;
+  color: var(--muted);
+}
+.sidebar nav a .nav-text {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sidebar nav a .count {
+  font-size: 11px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  background: var(--surface-2);
+  padding: 1px 6px;
+  border-radius: 999px;
+  min-width: 18px;
+  text-align: center;
+}
+.sidebar nav a:hover { background: var(--surface-2); }
+.sidebar nav a:hover .icon { color: var(--ink-2); }
+.sidebar nav a.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.sidebar nav a.active .icon { color: var(--accent); }
+.sidebar nav a.active .count { background: var(--surface); color: var(--accent); }
+
+.sidebar .target-info {
+  margin-top: auto;
+  padding: 12px 8px;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.sidebar .target-info .target-url {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-2);
+  word-break: break-all;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.menu-toggle {
+  display: none;
+}
+
+/* ===== Main ===== */
+.main { min-width: 0; padding: 24px 28px 60px; }
+
+/* ===== Top header bar ===== */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0 20px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 24px;
+}
+.topbar .crumbs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.topbar .crumbs .crumb-sep { color: var(--muted-2); }
+.topbar .crumbs .current { color: var(--ink); font-weight: 500; }
+.topbar .actions { display: flex; gap: 6px; }
+.topbar .pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  font-size: 11px;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+}
+.topbar .pill .icon { width: 12px; height: 12px; }
+
+/* ===== Page title ===== */
+.page-title {
+  margin-bottom: 24px;
+}
+.page-title h1 {
+  font-family: var(--sans);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 6px;
+  color: var(--ink);
+  word-break: break-word;
+}
+.page-title .sub {
+  font-size: 13px;
+  color: var(--muted);
+}
+.page-title .sub strong { color: var(--ink); font-weight: 600; }
+
+/* ============================================================
+   KPI tile row
+   ============================================================ */
+.kpi-row {
+  display: grid;
+  grid-template-columns: 1.4fr repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.kpi {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+.kpi:hover {
+  border-color: var(--ink);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+.kpi.kpi-overall:hover { border-color: rgba(255,255,255,0.4); }
+.kpi.kpi-high:hover    { border-color: var(--high); }
+.kpi.kpi-medium:hover  { border-color: var(--medium); }
+.kpi.kpi-low:hover     { border-color: var(--low); }
+.kpi.kpi-good:hover    { border-color: var(--good); }
+.kpi .kpi-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.kpi .kpi-head .icon { width: 13px; height: 13px; }
+.kpi .kpi-num {
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.kpi .kpi-num small {
+  font-size: 14px;
+  color: var(--muted);
+  font-weight: 500;
+  letter-spacing: 0;
+  margin-left: 3px;
+}
+.kpi .kpi-sub {
+  font-size: 11px;
+  color: var(--muted);
+}
+.kpi.kpi-overall { background: linear-gradient(135deg, var(--ink) 0%, #2a2a35 100%); color: var(--surface); border-color: transparent; }
+.kpi.kpi-overall .kpi-head { color: rgba(255,255,255,0.6); }
+.kpi.kpi-overall .kpi-num { color: var(--surface); font-size: 52px; }
+.kpi.kpi-overall .kpi-num small { color: rgba(255,255,255,0.55); }
+.kpi.kpi-overall .kpi-sub { color: rgba(255,255,255,0.7); }
+.kpi.kpi-high .kpi-num { color: var(--high); }
+.kpi.kpi-medium .kpi-num { color: var(--medium); }
+.kpi.kpi-low .kpi-num { color: var(--low); }
+.kpi.kpi-good .kpi-num { color: var(--good); }
+
+/* ============================================================
+   Section
+   ============================================================ */
+section { margin-bottom: 28px; scroll-margin-top: 16px; }
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.section-head .title-block {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-head .title-block .icon-wrap {
+  width: 28px;
+  height: 28px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+}
+.section-head .title-block .icon-wrap .icon { width: 15px; height: 15px; }
+.section-head h2 {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+  color: var(--ink);
+}
+.section-head .meta {
+  font-size: 12px;
+  color: var(--muted);
+  font-feature-settings: "tnum";
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+/* ============================================================
+   Cover figure (LP screenshot, browser frame)
+   ============================================================ */
+.cover-figure {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.cover-figure .frame-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--line);
+}
+.cover-figure .frame-bar .dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--line);
+}
+.cover-figure .frame-bar .url-bar {
+  margin-left: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cover-figure .frame-body {
+  position: relative;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+.cover-figure[data-display="fit"] .frame-body { max-height: 540px; }
+.cover-figure[data-display="full"] .frame-body { max-height: none; }
+.cover-figure[data-display="mobile"] .frame-body {
+  max-height: 700px;
+  display: flex;
+  justify-content: center;
+  background: var(--surface-2);
+  padding: 16px;
+}
+.cover-figure[data-display="mobile"] .frame-body img {
+  width: 360px;
+  max-width: 100%;
+}
+.cover-figure .frame-body img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.cover-figure[data-display="fit"] .frame-body .fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(to bottom, transparent, var(--surface));
+  pointer-events: none;
+}
+.cover-figure[data-display="full"] .frame-body .fade,
+.cover-figure[data-display="mobile"] .frame-body .fade { display: none; }
+.cover-figure .no-image {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* Display mode toggle (Fit / Full / Mobile) — cover-figure 上部 */
+.display-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  font-family: var(--sans);
+  flex-wrap: wrap;
+}
+.display-toolbar .dt-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-right: 4px;
+}
+.display-toolbar button {
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-family: inherit;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.display-toolbar button:hover { background: var(--surface-2); color: var(--ink); border-color: var(--line); }
+.display-toolbar button.active { background: var(--accent); color: #fff; }
+
+/* 色覚 simulation toggle */
+.cv-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--line);
+  font-family: var(--sans);
+  flex-wrap: wrap;
+}
+.cv-toolbar .cv-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-right: 4px;
+}
+.cv-toolbar button {
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-family: inherit;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.cv-toolbar button:hover {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--line);
+}
+.cv-toolbar button.active {
+  background: var(--ink);
+  color: #fff;
+}
+.cover-figure .frame-body img[data-cv="protan"] { filter: url(#cv-protan); }
+.cover-figure .frame-body img[data-cv="deutan"] { filter: url(#cv-deutan); }
+.cover-figure .frame-body img[data-cv="tritan"] { filter: url(#cv-tritan); }
+.cover-figure .frame-body img[data-cv="achroma"] { filter: grayscale(100%); }
+
+/* Effort badge (修正コスト) */
+.effort-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--muted);
+}
+.effort-chip::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+.effort-chip.quick { color: var(--good); background: var(--good-soft); }
+.effort-chip.quick::before { background: var(--good); }
+.effort-chip.moderate { color: var(--medium); background: var(--medium-soft); }
+.effort-chip.moderate::before { background: var(--medium); }
+.effort-chip.major { color: var(--high); background: var(--high-soft); }
+.effort-chip.major::before { background: var(--high); }
+
+/* Issue card に「修正 prompt Copy」 button (Claude に paste して即修正対話に) */
+.issue { position: relative; }
+.issue-copy {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--accent-soft, #eef2ff);
+  border: 1.5px solid var(--accent);
+  border-radius: var(--radius-md, 8px);
+  padding: 7px 13px;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  z-index: 2;
+  letter-spacing: 0.01em;
+  box-shadow: 0 1px 2px rgba(79, 70, 229, 0.08);
+}
+.issue-copy:hover {
+  background: var(--accent);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+}
+.issue-copy:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(79, 70, 229, 0.10);
+}
+.issue-copy .icon {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+.issue-copy.copied {
+  background: var(--good, #10b981);
+  color: #fff;
+  border-color: var(--good, #10b981);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+/* ============================================================
+   Axis grid (2col)
+   ============================================================ */
+.axis-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.axis-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 16px;
+  align-items: start;
+  position: relative;
+}
+.axis-card.axis-top {
+  border-color: var(--good);
+  background: linear-gradient(180deg, var(--good-soft) 0%, var(--surface) 60%);
+}
+.axis-card.axis-top::after {
+  content: "TOP";
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--good);
+  background: var(--surface);
+  border: 1px solid var(--good);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+.axis-card.axis-bottom {
+  border-color: var(--high);
+  background: linear-gradient(180deg, var(--high-soft) 0%, var(--surface) 60%);
+}
+.axis-card.axis-bottom::after {
+  content: "要対応";
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--high);
+  background: var(--surface);
+  border: 1px solid var(--high);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+.axis-card .axis-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.axis-card .axis-name .icon { width: 12px; height: 12px; }
+.axis-card .axis-score {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  line-height: 1;
+  text-align: right;
+}
+.axis-card .axis-score.low { color: var(--high); }
+.axis-card .axis-score.mid { color: var(--medium); }
+.axis-card .axis-bar {
+  grid-column: 1 / 3;
+  height: 4px;
+  background: var(--surface-2);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 2px;
+}
+.axis-card .axis-bar .fill {
+  height: 100%;
+  background: var(--ink);
+  border-radius: 999px;
+}
+.axis-card .axis-bar .fill.low { background: var(--high); }
+.axis-card .axis-bar .fill.mid { background: var(--medium); }
+.axis-card .axis-comment {
+  grid-column: 1 / 3;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.55;
+  margin-top: 4px;
+}
+
+/* ============================================================
+   Issues (card list with crop preview)
+   ============================================================ */
+.issue-list { display: flex; flex-direction: column; gap: 12px; }
+.issue {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 14px;
+}
+.issue .issue-num {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted-2);
+  padding-top: 3px;
+  letter-spacing: 0;
+}
+.issue-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+.issue-head .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+.issue-head .badge .icon { width: 11px; height: 11px; }
+.issue.high  .badge { background: var(--high-soft);   color: var(--high); }
+.issue.medium .badge { background: var(--medium-soft); color: var(--medium); }
+.issue.low   .badge { background: var(--low-soft);   color: var(--low); }
+.issue-head .axis-tag {
+  font-size: 11px;
+  color: var(--muted);
+  background: var(--surface-2);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-family: var(--mono);
+}
+.issue-head .axis { display: none; }
+.issue-head .title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.4;
+  flex-basis: 100%;
+  margin-top: 2px;
+}
+.issue-body { display: grid; gap: 10px; }
+.issue-body p { margin: 0; }
+.issue-body .why {
+  font-size: 13px;
+  color: var(--ink-2);
+  line-height: 1.6;
+}
+.issue-body .fix {
+  font-size: 13px;
+  color: var(--ink);
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  line-height: 1.55;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.issue-body .fix::before {
+  content: "";
+  background: var(--accent);
+  width: 3px;
+  align-self: stretch;
+  flex-shrink: 0;
+  border-radius: 2px;
+}
+.issue-body .css-finding {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  background: var(--surface-2);
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  word-break: break-all;
+  line-height: 1.5;
+}
+.issue-body .ref {
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.issue-body .ref .icon { width: 12px; height: 12px; }
+.issue-body .ref a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px dashed transparent;
+}
+.issue-body .ref a:hover { border-bottom-color: var(--accent); }
+
+/* === Evidence visual : focus crop + highlight box overlay === */
+.evidence {
+  margin-top: 4px;
+}
+.evidence-frame {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  cursor: zoom-in;
+  transition: max-width 0.2s ease;
+}
+.evidence-frame:hover {
+  border-color: var(--ink-2);
+}
+.evidence { margin-bottom: 6px; }
+.evidence-frame.crop {
+  background-size: var(--bg-size, 100% auto);
+  background-position: var(--bg-pos, top left);
+  background-repeat: no-repeat;
+  aspect-ratio: var(--ar);
+}
+.evidence-frame.crop:not([style*="height:"]) {
+  /* fallback : aspect-ratio が効かない場合 */
+  min-height: 100px;
+}
+/* highlight box は撤廃 (Vision の percent 指定で位置がズレやすい)。
+   crop image + 左下 pill バッジ で「ここを zoom した」を示す */
+.evidence-frame .highlight { display: none; }
+.evidence-frame .callout {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 4px 10px 4px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+  max-width: calc(100% - 16px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  pointer-events: none;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.evidence-frame .callout::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--high);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.evidence-img-full {
+  display: block;
+  max-width: 360px;
+  width: 100%;
+  border-radius: var(--radius-sm);
+}
+.evidence .ev-caption {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.evidence .ev-caption .icon { width: 12px; height: 12px; }
+
+.empty {
+  font-size: 13px;
+  color: var(--muted);
+  padding: 16px;
+  background: var(--surface);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+/* ============================================================
+   Highlights : pull-quote + chip list
+   ============================================================ */
+.pull-quote {
+  font-family: var(--serif);
+  font-size: 22px;
+  line-height: 1.45;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.005em;
+  margin: 0 0 14px;
+  padding: 22px 26px 22px 28px;
+  background: linear-gradient(135deg, var(--good-soft) 0%, var(--surface) 80%);
+  border: 1px solid var(--good);
+  border-left: 4px solid var(--good);
+  border-radius: var(--radius-md);
+}
+.highlight-chips {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.highlight-chips .chip {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 11px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--ink-2);
+  line-height: 1.55;
+}
+.highlight-chips .chip .icon-wrap {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: var(--good-soft);
+  color: var(--good);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.highlight-chips .chip .icon-wrap .icon { width: 13px; height: 13px; }
+
+/* ============================================================
+   References
+   ============================================================ */
+.refs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 10px;
+}
+@media (min-width: 1100px) {
+  .refs { grid-template-columns: repeat(3, 1fr); }
+}
+.refs a {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  color: var(--ink);
+  text-decoration: none;
+  transition: border-color 0.15s, transform 0.15s;
+}
+.refs a:hover { border-color: var(--accent); }
+.refs a .icon-wrap {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.refs a .icon-wrap .icon { width: 14px; height: 14px; }
+.refs a .ref-text strong {
+  display: block;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+.refs a .ref-text span {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* ============================================================
+   JSON appendix
+   ============================================================ */
+.json-wrap { position: relative; }
+.json-copy {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  z-index: 1;
+}
+.json-copy:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+.json-copy.copied { background: var(--good); color: #fff; border-color: var(--good); }
+.json-block {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--ink-2);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  overflow-x: auto;
+  white-space: pre;
+  line-height: 1.6;
+  tab-size: 2;
+}
+.json-section .desc {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 10px;
+}
+.json-section .desc code {
+  font-family: var(--mono);
+  font-size: 11px;
+  background: var(--surface-2);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+/* ============================================================
+   Footer
+   ============================================================ */
+footer {
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+  color: var(--muted);
+}
+footer .footer-cta {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+  margin-bottom: 16px;
+}
+footer .footer-cta a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 12px;
+  transition: border-color 0.15s, background 0.15s;
+}
+footer .footer-cta a:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+footer .footer-cta a .icon { width: 14px; height: 14px; color: var(--accent); }
+footer .footer-credit {
+  text-align: center;
+  padding-top: 12px;
+  border-top: 1px solid var(--line-soft);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+footer code {
+  font-family: var(--mono);
+  background: var(--surface-2);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+/* legacy hero placeholder 残ったとき用 */
+#hero { display: none; }
+
+/* ============================================================
+   Dark mode : OS の prefers-color-scheme: dark に追従
+   ============================================================ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b0b10;
+    --surface: #15151c;
+    --surface-2: #1d1d27;
+    --ink: #f1f1f6;
+    --ink-2: #d5d5dd;
+    --muted: #a0a0aa;
+    --muted-2: #6c6c75;
+    --line: #2a2a35;
+    --line-soft: #1d1d27;
+    --accent: #818cf8;
+    --accent-soft: rgba(129, 140, 248, 0.12);
+    --high: #f87171;
+    --high-soft: rgba(248, 113, 113, 0.12);
+    --medium: #fbbf24;
+    --medium-soft: rgba(251, 191, 36, 0.12);
+    --low: #9ca3af;
+    --low-soft: rgba(156, 163, 175, 0.12);
+    --good: #34d399;
+    --good-soft: rgba(52, 211, 153, 0.12);
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  .kpi.kpi-overall {
+    background: linear-gradient(135deg, #1f1f2c 0%, #2a2a3a 100%);
+    border: 1px solid var(--line);
+  }
+  .cover-figure .frame-body img,
+  .evidence-frame img { /* スクショ自体は元色で見せる */ filter: none; }
+  .axis-card.axis-top {
+    background: linear-gradient(180deg, var(--good-soft) 0%, var(--surface) 60%);
+  }
+  .axis-card.axis-bottom {
+    background: linear-gradient(180deg, var(--high-soft) 0%, var(--surface) 60%);
+  }
+  .pull-quote {
+    background: linear-gradient(135deg, var(--good-soft) 0%, var(--surface) 80%);
+  }
+}
+
+/* ============================================================
+   Term tooltip : デザイントークン等の専門用語に hover で説明
+   ============================================================ */
+.term {
+  border-bottom: 1px dotted var(--muted);
+  cursor: help;
+  position: relative;
+  display: inline-block;
+}
+.term:hover {
+  border-bottom-color: var(--accent);
+  border-bottom-style: solid;
+}
+.term::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 8px);
+  background: var(--ink);
+  color: var(--surface);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0;
+  white-space: normal;
+  width: max-content;
+  max-width: 280px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+  z-index: 100;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(4px);
+  transition: opacity 0.12s, transform 0.12s, visibility 0s linear 0.12s;
+  pointer-events: none;
+}
+.term::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  bottom: calc(100% + 4px);
+  width: 8px;
+  height: 8px;
+  background: var(--ink);
+  transform: rotate(45deg) translateY(2px);
+  z-index: 99;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.12s, visibility 0s linear 0.12s;
+  pointer-events: none;
+}
+.term:hover::after,
+.term:hover::before {
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
+}
+.term:hover::after { transform: translateY(0); }
+/* 印刷時は tooltip 内容は非表示、underline のみ */
+@media print {
+  .term { border-bottom: 1px dotted #888; cursor: default; }
+  .term::after, .term::before { display: none !important; }
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 960px) {
+  .shell { grid-template-columns: 1fr; }
+  .sidebar {
+    position: sticky;
+    top: 0;
+    height: auto;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px 16px;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+    z-index: 10;
+  }
+  .sidebar .brand { border-bottom: none; padding-bottom: 0; }
+  .sidebar[data-open="false"] nav,
+  .sidebar[data-open="false"] .group-label,
+  .sidebar[data-open="false"] .target-info { display: none; }
+  .menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: 1px solid var(--line);
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .menu-toggle .icon { width: 14px; height: 14px; }
+  .main { padding: 16px 16px 60px; }
+  .kpi-row { grid-template-columns: 1fr 1fr; }
+  .kpi.kpi-overall { grid-column: 1 / 3; }
+  .kpi.kpi-overall .kpi-num { font-size: 36px; }
+  .page-title h1 { font-size: 22px; }
+  .axis-grid { grid-template-columns: 1fr; }
+  .refs { grid-template-columns: 1fr; }
+  .evidence-frame { max-width: 100%; }
+}
+@media (max-width: 480px) {
+  .kpi-row { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .kpi { padding: 12px 14px; }
+  .kpi .kpi-num { font-size: 26px; }
+  .kpi.kpi-overall .kpi-num { font-size: 32px; }
+  .pull-quote { font-size: 18px; padding: 14px 16px; }
+}
+
+/* ============================================================
+   Print : PDF 印刷耐久 (A4 / Letter)
+   ============================================================ */
+@media print {
+  :root {
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --surface-2: #f5f5f7;
+    --line: #d0d0d4;
+    --line-soft: #e8e8eb;
+    --ink: #000000;
+    --ink-2: #1a1a1a;
+    --muted: #444;
+    --muted-2: #777;
+  }
+  @page {
+    size: A4;
+    margin: 12mm 14mm;
+  }
+  html, body {
+    background: #ffffff !important;
+    color: #000 !important;
+    font-size: 11pt;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .shell {
+    display: block !important;
+    min-height: 0 !important;
+  }
+  .sidebar,
+  .menu-toggle,
+  .topbar .actions,
+  .cover-figure .frame-body .fade {
+    display: none !important;
+  }
+  .main {
+    padding: 0 !important;
+  }
+  .topbar {
+    margin-bottom: 14px !important;
+    padding-bottom: 10px !important;
+  }
+  .page-title { margin-bottom: 14px !important; }
+  .page-title h1 { font-size: 22pt !important; }
+
+  /* KPI : 印刷で潰さない */
+  .kpi-row {
+    grid-template-columns: repeat(5, 1fr) !important;
+    gap: 6px !important;
+    margin-bottom: 16px !important;
+    break-inside: avoid;
+  }
+  .kpi {
+    padding: 10px 12px !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+  .kpi .kpi-num { font-size: 24pt !important; }
+  .kpi.kpi-overall {
+    background: #1a1a1a !important;
+    color: #fff !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .kpi.kpi-overall .kpi-num { color: #fff !important; }
+  .kpi.kpi-overall .kpi-num small,
+  .kpi.kpi-overall .kpi-head,
+  .kpi.kpi-overall .kpi-sub { color: rgba(255,255,255,0.8) !important; }
+  .kpi.kpi-high .kpi-num { color: #b91c1c !important; }
+  .kpi.kpi-medium .kpi-num { color: #b45309 !important; }
+  .kpi.kpi-good .kpi-num { color: #047857 !important; }
+
+  /* section break control */
+  section {
+    break-inside: avoid;
+    margin-bottom: 18px !important;
+  }
+  .axis-grid { gap: 6px !important; }
+  .axis-card {
+    break-inside: avoid;
+    padding: 10px 12px !important;
+  }
+  .axis-card .axis-bar { display: none; }
+  .issue-list { gap: 8px !important; }
+  .issue {
+    break-inside: avoid;
+    padding: 12px 14px !important;
+  }
+  .issue-body .fix {
+    background: #f5f5f7 !important;
+  }
+  .issue-body .css-finding {
+    background: #f5f5f7 !important;
+  }
+  .evidence-frame {
+    max-width: 100% !important;
+    break-inside: avoid;
+  }
+  .evidence-frame.crop { min-height: 120px; }
+  .evidence-frame .highlight {
+    /* dim mask は印刷でくどい、シンプル red border のみに */
+    box-shadow: none !important;
+    border-width: 2px !important;
+  }
+  .evidence-frame .callout {
+    background: #b91c1c !important;
+    color: #fff !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .pull-quote {
+    break-inside: avoid;
+    padding: 14px 18px !important;
+    font-size: 14pt !important;
+  }
+  .highlight-chips { break-inside: avoid; }
+  .highlight-chips .chip { break-inside: avoid; padding: 8px 12px !important; }
+  .refs { gap: 6px !important; }
+  .refs a { padding: 10px 12px !important; break-inside: avoid; }
+
+  /* URL 印刷時に href を明示 (json/sidebar/footer は除外) */
+  .issue-body .ref a[href^="http"]::after,
+  .refs a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 9pt;
+    color: #555;
+    word-break: break-all;
+  }
+  a { color: #000 !important; text-decoration: underline; }
+
+  .json-section { display: none; }
+  footer { margin-top: 24px !important; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ===== Lucide-inspired inline SVG icon sprites ===== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-activity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+    </symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7"/><circle cx="12" cy="12" r="3"/>
+    </symbol>
+    <symbol id="i-image" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+    </symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/>
+      <path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/>
+      <path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/>
+    </symbol>
+    <symbol id="i-alert-triangle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/>
+      <path d="M12 9v4"/><path d="M12 17h.01"/>
+    </symbol>
+    <symbol id="i-alert-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/>
+    </symbol>
+    <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
+    </symbol>
+    <symbol id="i-sparkles" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+    </symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12"/>
+    </symbol>
+    <symbol id="i-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+    </symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>
+    </symbol>
+    <symbol id="i-file-text" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/>
+    </symbol>
+    <symbol id="i-external-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+    </symbol>
+    <symbol id="i-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.71"/>
+    </symbol>
+    <symbol id="i-bookmark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>
+    </symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/>
+    </symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>
+    </symbol>
+    <symbol id="i-zoom" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><line x1="8" x2="14" y1="11" y2="11"/><line x1="11" x2="11" y1="8" y2="14"/>
+    </symbol>
+    <symbol id="i-clipboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+    </symbol>
+    <!-- 色覚 simulation filters (Brettel et al. 1997 近似) -->
+    <filter id="cv-protan">
+      <feColorMatrix type="matrix" values="0.567 0.433 0 0 0  0.558 0.442 0 0 0  0 0.242 0.758 0 0  0 0 0 1 0"/>
+    </filter>
+    <filter id="cv-deutan">
+      <feColorMatrix type="matrix" values="0.625 0.375 0 0 0  0.7 0.3 0 0 0  0 0.3 0.7 0 0  0 0 0 1 0"/>
+    </filter>
+    <filter id="cv-tritan">
+      <feColorMatrix type="matrix" values="0.95 0.05 0 0 0  0 0.433 0.567 0 0  0 0.475 0.525 0 0  0 0 0 1 0"/>
+    </filter>
+  </defs>
+</svg>
+
+<div class="shell">
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar" id="sidebar" data-open="true">
+  <div class="brand">
+    <div class="brand-mark"><span class="icon"><svg><use href="#i-activity"/></svg></span></div>
+    <div>
+      <div class="brand-name">Design Review</div>
+      <div class="brand-sub">2026-05-11T00:00:00Z</div>
+    </div>
+  </div>
+  <button type="button" class="menu-toggle">
+    <span class="icon"><svg><use href="#i-menu"/></svg></span>
+    <span>メニュー</span>
+  </button>
+
+  <div>
+    <div class="group-label">Report</div>
+    <nav>
+      <a href="#overview"><span class="icon"><svg><use href="#i-grid"/></svg></span><span class="nav-text">概要</span></a>
+      <a href="#cover"><span class="icon"><svg><use href="#i-image"/></svg></span><span class="nav-text">対象画面</span></a>
+      <a href="#axes"><span class="icon"><svg><use href="#i-layers"/></svg></span><span class="nav-text">軸別評価</span><span class="count">10</span></a>
+    </nav>
+  </div>
+
+  <div>
+    <div class="group-label">Findings</div>
+    <nav>
+      <a href="#high"><span class="icon"><svg><use href="#i-alert-triangle"/></svg></span><span class="nav-text">重大な指摘</span><span class="count">2</span></a>
+      <a href="#medium"><span class="icon"><svg><use href="#i-alert-circle"/></svg></span><span class="nav-text">改善余地</span><span class="count">4</span></a>
+      <a href="#low"><span class="icon"><svg><use href="#i-info"/></svg></span><span class="nav-text">細かい指摘</span><span class="count">2</span></a>
+      <a href="#good"><span class="icon"><svg><use href="#i-sparkles"/></svg></span><span class="nav-text">良かった点</span><span class="count">8</span></a>
+    </nav>
+  </div>
+
+  <div>
+    <div class="group-label">Reference</div>
+    <nav>
+      <a href="#refs"><span class="icon"><svg><use href="#i-bookmark"/></svg></span><span class="nav-text">参考サイト</span></a>
+      <a href="#appendix"><span class="icon"><svg><use href="#i-file-text"/></svg></span><span class="nav-text">付録 JSON</span></a>
+    </nav>
+  </div>
+
+  <div class="target-info">
+    <span class="target-url">Sublog LP — hiroooo.github.io/sublog/</span>
+    web · general · normal
+  </div>
+</aside>
+
+<!-- ===== MAIN ===== -->
+<main class="main">
+
+<div class="topbar">
+  <div class="crumbs">
+    <span><span class="icon" style="width:13px;height:13px;vertical-align:-2px"><svg><use href="#i-globe"/></svg></span> design-review</span>
+    <span class="crumb-sep">/</span>
+    <span class="current">Sublog LP — hiroooo.github.io/sublog/</span>
+  </div>
+  <div class="actions">
+    <span class="pill"><span class="icon"><svg><use href="#i-target"/></svg></span> web</span>
+    <span class="pill">general · normal</span>
+  </div>
+</div>
+
+<div class="page-title" id="overview">
+  <h1>Sublog LP — hiroooo.github.io/sublog/</h1>
+  <div class="sub">総合 <strong>77 / 100</strong> · <strong>改善余地あり</strong> · 10 軸 + 1 行コメントで評価</div>
+</div>
+
+<div class="kpi-row">
+  <a class="kpi kpi-overall" href="#axes">
+    <div class="kpi-head"><span class="icon"><svg><use href="#i-activity"/></svg></span> Overall</div>
+    <div class="kpi-num">77<small>/100</small></div>
+    <div class="kpi-sub">改善余地あり</div>
+  </a>
+  <a class="kpi kpi-high" href="#high">
+    <div class="kpi-head"><span class="icon"><svg><use href="#i-alert-triangle"/></svg></span> High</div>
+    <div class="kpi-num">2</div>
+    <div class="kpi-sub">重大な指摘</div>
+  </a>
+  <a class="kpi kpi-medium" href="#medium">
+    <div class="kpi-head"><span class="icon"><svg><use href="#i-alert-circle"/></svg></span> Medium</div>
+    <div class="kpi-num">4</div>
+    <div class="kpi-sub">改善余地</div>
+  </a>
+  <a class="kpi kpi-low" href="#low">
+    <div class="kpi-head"><span class="icon"><svg><use href="#i-info"/></svg></span> Low</div>
+    <div class="kpi-num">2</div>
+    <div class="kpi-sub">細かい指摘</div>
+  </a>
+  <a class="kpi kpi-good" href="#good">
+    <div class="kpi-head"><span class="icon"><svg><use href="#i-sparkles"/></svg></span> Good</div>
+    <div class="kpi-num">8</div>
+    <div class="kpi-sub">良い点</div>
+  </a>
+</div>
+
+<section id="cover">
+  <div class="section-head">
+    <div class="title-block">
+      <div class="icon-wrap"><span class="icon"><svg><use href="#i-image"/></svg></span></div>
+      <h2>対象画面</h2>
+    </div>
+    <span class="meta">レビュー対象</span>
+  </div>
+  <figure class="cover-figure" data-display="fit">
+    <div class="frame-bar">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <span class="url-bar">Sublog LP — hiroooo.github.io/sublog/</span>
+    </div>
+    <div class="display-toolbar" role="toolbar" aria-label="表示モード">
+      <span class="dt-label">Display</span>
+      <button type="button" data-display="fit" class="active">Fit</button>
+      <button type="button" data-display="full">Full</button>
+      <button type="button" data-display="mobile">Mobile</button>
+    </div>
+    <div class="cv-toolbar" role="toolbar" aria-label="色覚 simulation">
+      <span class="cv-label">Vision</span>
+      <button type="button" data-cv="normal" class="active">通常</button>
+      <button type="button" data-cv="protan">1型 (赤)</button>
+      <button type="button" data-cv="deutan">2型 (緑)</button>
+      <button type="button" data-cv="tritan">3型 (青)</button>
+      <button type="button" data-cv="achroma">完全色盲</button>
+    </div>
+    <div class="frame-body">
+      <img src="captures/desktop-light.png" alt="target screenshot">
+      <div class="fade"></div>
+    </div>
+  </figure>
+</section>
+
+<section id="axes">
+  <div class="section-head">
+    <div class="title-block">
+      <div class="icon-wrap"><span class="icon"><svg><use href="#i-layers"/></svg></span></div>
+      <h2>軸別評価</h2>
+    </div>
+    <span class="meta">10 軸</span>
+  </div>
+  <div class="axis-grid">
+    <div class="axis-card ">
+      <div class="axis-name"><span class="icon"><svg><use href="#i-eye"/></svg></span>可読性</div>
+      <div class="axis-score ">85</div>
+      <div class="axis-bar"><div class="fill " style="width:85%"></div></div>
+      <div class="axis-comment"><span class="term" data-tooltip="Google Fonts の和文 sans、柔らかい印象">Zen Kaku Gothic</span> + 行間 1.7 で本文が読みやすい。行長も適切でストレスなし、コントラストも合格。</div>
+    </div>
+    <div class="axis-card ">
+      <div class="axis-name"><span class="icon"><svg><use href="#i-layers"/></svg></span>情報階層</div>
+      <div class="axis-score mid">75</div>
+      <div class="axis-bar"><div class="fill mid" style="width:75%"></div></div>
+      <div class="axis-comment">h1 <span class="term" data-tooltip="page 最上部の主訴求ブロック (visual + headline + CTA)">hero</span> が強く視線が固定される。h2 と body の weight 差がやや浅く、中間の階層が弱い場面あり。</div>
+    </div>
+    <div class="axis-card ">
+      <div class="axis-name"><span class="icon"><svg><use href="#i-grid"/></svg></span>余白・リズム</div>
+      <div class="axis-score mid">72</div>
+      <div class="axis-bar"><div class="fill mid" style="width:72%"></div></div>
+      <div class="axis-comment">縦余白は十分でミニマル路線の呼吸感あり。ただし spacing 17 種 (<span class="term" data-tooltip="標準偏差、値のバラつき度合い (大きいほど不均一)">stdev</span> 11.4px) で <span class="term" data-tooltip="全 spacing を 8 の倍数 (4/8/16/24/32/48/64) に揃える設計、リズム感の基盤">8pt grid</span> 揺れあり。</div>
+    </div>
+    <div class="axis-card ">
+      <div class="axis-name"><span class="icon"><svg><use href="#i-file-text"/></svg></span>タイポグラフィ</div>
+      <div class="axis-score mid">72</div>
+      <div class="axis-bar"><div class="fill mid" style="width:72%"></div></div>
+      <div class="axis-comment"><span class="term" data-tooltip="Google Fonts の和文 sans、柔らかい印象">Zen Kaku Gothic</span> + <span class="term" data-tooltip="Apple 標準 sans (system-ui 指定で fallback 含めて呼べる)">SF Pro</span> の組合せが清潔。ただし font-family fallback 7 種で chain が冗長、weight 3 種で階層差控えめ。</div>
+    </div>
+    <div class="axis-card axis-bottom">
+      <div class="axis-name"><span class="icon"><svg><use href="#i-sparkles"/></svg></span>配色</div>
+      <div class="axis-score mid">70</div>
+      <div class="axis-bar"><div class="fill mid" style="width:70%"></div></div>
+      <div class="axis-comment">黒×白×グレー基調が一貫しミニマル台帳と整合。ただし <span class="term" data-tooltip="完全黒 (#000000)、OLED で滲み + 目に痛い、2026 は gray-900 推奨">true black</span> (#000) / <span class="term" data-tooltip="完全白 (#ffffff)、長文で目が疲れる、2026 は gray-50 推奨">true white</span> (#fff) で 2026 標準とは微差あり。</div>
+    </div>
+    <div class="axis-card axis-bottom">
+      <div class="axis-name"><span class="icon"><svg><use href="#i-image"/></svg></span>画像密度</div>
+      <div class="axis-score mid">70</div>
+      <div class="axis-bar"><div class="fill mid" style="width:70%"></div></div>
+      <div class="axis-comment"><span class="term" data-tooltip="page 最上部の主訴求ブロック (visual + headline + CTA)">hero</span> に大型 visual はないが iPhone モック 4 枚で <span class="term" data-tooltip="アプリ名/コピー で謳う core feature が画面で視覚化されているか">Brand Promise</span> を視覚化。「できること」6 機能の icon 不在は惜しい。</div>
+    </div>
+    <div class="axis-card axis-bottom">
+      <div class="axis-name"><span class="icon"><svg><use href="#i-activity"/></svg></span>モダン度</div>
+      <div class="axis-score mid">70</div>
+      <div class="axis-bar"><div class="fill mid" style="width:70%"></div></div>
+      <div class="axis-comment">radius 統一 + 過剰 shadow なしでモダン基準合格。ただし <span class="term" data-tooltip="1-2 色の控えめなグラデ、2026 SaaS で標準">subtle gradient</span> / <span class="term" data-tooltip="ブランドの主訴求色 (1-2 色)、CTA やリンクに使う">accent</span> / <span class="term" data-tooltip="OS の dark 設定に合わせて UI 色を反転する仕組み、2026 標準対応">dark mode</span> 不在で 2026 トレンド味は薄い。</div>
+    </div>
+    <div class="axis-card ">
+      <div class="axis-name"><span class="icon"><svg><use href="#i-link"/></svg></span>統一感</div>
+      <div class="axis-score mid">78</div>
+      <div class="axis-bar"><div class="fill mid" style="width:78%"></div></div>
+      <div class="axis-comment">ミニマル路線がコピー / visual / footer まで貫徹。<span class="term" data-tooltip="色 / spacing / radius 等の値を CSS 変数で集約する設計手法">design token</span> の片鱗 (radius 1 種) もあり、ブランド統一感は良好。</div>
+    </div>
+    <div class="axis-card ">
+      <div class="axis-name"><span class="icon"><svg><use href="#i-check"/></svg></span>アクセシビリティ</div>
+      <div class="axis-score ">80</div>
+      <div class="axis-bar"><div class="fill " style="width:80%"></div></div>
+      <div class="axis-comment">コントラスト◎、ナビ 4 項目で迷いなし。<span class="term" data-tooltip="タップ可能要素の最小サイズ (iOS 44pt / Android 48dp)">tap target</span> サイズは要実測 (44×44 px が推奨ライン)。</div>
+    </div>
+    <div class="axis-card axis-top">
+      <div class="axis-name"><span class="icon"><svg><use href="#i-target"/></svg></span>ブランド約束</div>
+      <div class="axis-score ">88</div>
+      <div class="axis-bar"><div class="fill " style="width:88%"></div></div>
+      <div class="axis-comment">「スクショ 1 枚で台帳になる」コピー + iPhone モック 4 枚 (「ぜんぶで¥X,XXX」「撮ると一覧」「ホームで台帳」「広告 vs 台帳」) で OCR→台帳の流れが完全視覚化、core feature が立ってる。</div>
+    </div>
+  </div>
+</section>
+
+<section id="high">
+  <div class="section-head">
+    <div class="title-block">
+      <div class="icon-wrap" style="color:var(--high);background:var(--high-soft);border-color:transparent"><span class="icon"><svg><use href="#i-alert-triangle"/></svg></span></div>
+      <h2>重大な指摘</h2>
+    </div>
+    <span class="meta">2 件</span>
+  </div>
+  <div class="issue-list"><div class="issue high" data-prompt="issues.json の typo_001 を修正してください。
+
+[Issue] font-family fallback 7 種で chain が冗長
+[Why] 実際 render される font は 2-3 種だが、fallback chain が長いと FOIT/FOUT のリスク + 何が表示されるか予測困難。design token 不在の兆候。
+[Fix] 和文 Zen Kaku Gothic New + 英文 SF Pro/-apple-system + monospace の 3 階層に集約。CSS 変数 (--font-sans / --font-serif / --font-mono) 化
+[axis] typography / priority high
+
+該当ファイル/コンポーネントを grep + Edit で直接修正してください。">
+<button type="button" class="issue-copy" title="クリックで修正 prompt をコピー、Claude に paste して即対話"><span class="icon"><svg><use href="#i-clipboard"/></svg></span><span class="copy-text">Claude へ送る</span></button>
+<div class="issue-num">01</div>
+<div class="issue-body-wrap">
+<div class="issue-head">
+<span class="badge"><span class="icon"><svg><use href="#i-alert-triangle"/></svg></span>HIGH</span>
+<span class="axis-tag">typography</span>
+<span class="title">font-family fallback 7 種で chain が冗長</span>
+</div>
+<div class="issue-body">
+<p class="why">実際 render される font は 2-3 種だが、<span class="term" data-tooltip="font-family 指定で先頭 → 後続 に fallback する仕組み">fallback chain</span> が長いと <span class="term" data-tooltip="Flash of Invisible Text — web font 読込中は文字が見えない罠">FOIT</span>/<span class="term" data-tooltip="Flash of Unstyled Text — web font 読込前は fallback で表示">FOUT</span> のリスク + 何が表示されるか予測困難。<span class="term" data-tooltip="色 / spacing / radius 等の値を CSS 変数で集約する設計手法">design token</span> 不在の兆候。</p>
+<p class="fix">和文 <span class="term" data-tooltip="Google Fonts の和文 sans、柔らかい印象">Zen Kaku Gothic</span> New + 英文 <span class="term" data-tooltip="Apple 標準 sans (system-ui 指定で fallback 含めて呼べる)">SF Pro</span>/-apple-system + monospace の 3 階層に集約。CSS 変数 (--font-sans / --font-serif / --font-mono) 化</p>
+<div class="css-finding">unique families: Hiragino Kaku Gothic ProN, -apple-system, system-ui, Helvetica Neue, Zen Kaku Gothic New, Noto Sans JP, sans-serif</div>
+<div class="evidence">
+<div class="evidence-frame" style="position: relative; max-width: 360px;">
+<img class="evidence-img-full" src="captures/desktop-light.png" alt="">
+</div>
+</div>
+<p class="ref"><span class="icon"><svg><use href="#i-external-link"/></svg></span>参考: <a href="https://linear.app" target="_blank">https://linear.app</a> <a href="https://vercel.com" target="_blank">https://vercel.com</a></p>
+</div></div></div>
+<div class="issue high" data-prompt="issues.json の space_001 を修正してください。
+
+[Issue] spacing が 17 種、デザイントークン不在
+[Why] 18, 28, 36px のような 8pt grid 外の値が混じり、余白がランダムに感じられる。ミニマル路線では特に余白の整列度がブランド印象を決める。
+[Fix] 4pt / 8pt grid の token (4, 8, 16, 24, 32, 48, 64) に集約。CSS 変数 (--space-1 ~ --space-16) で統一
+[axis] whitespace / priority high
+
+該当ファイル/コンポーネントを grep + Edit で直接修正してください。">
+<button type="button" class="issue-copy" title="クリックで修正 prompt をコピー、Claude に paste して即対話"><span class="icon"><svg><use href="#i-clipboard"/></svg></span><span class="copy-text">Claude へ送る</span></button>
+<div class="issue-num">02</div>
+<div class="issue-body-wrap">
+<div class="issue-head">
+<span class="badge"><span class="icon"><svg><use href="#i-alert-triangle"/></svg></span>HIGH</span>
+<span class="axis-tag">whitespace</span>
+<span class="title">spacing が 17 種、<span class="term" data-tooltip="色 / spacing / radius 等の値を CSS 変数で集約する設計手法。例: --space-4: 16px">デザイントークン</span>不在</span>
+</div>
+<div class="issue-body">
+<p class="why">18, 28, 36px のような <span class="term" data-tooltip="全 spacing を 8 の倍数 (4/8/16/24/32/48/64) に揃える設計、リズム感の基盤">8pt grid</span> 外の値が混じり、余白がランダムに感じられる。ミニマル路線では特に余白の整列度がブランド印象を決める。</p>
+<p class="fix">4pt / <span class="term" data-tooltip="全 spacing を 8 の倍数 (4/8/16/24/32/48/64) に揃える設計、リズム感の基盤">8pt grid</span> の token (4, 8, 16, 24, 32, 48, 64) に集約。CSS 変数 (--space-1 ~ --space-16) で統一</p>
+<div class="css-finding">unique values: 0, 40, 18, 24, 8, 12, 48, 36, 10, 28px ... (stdev 11.4 / 8pt grid 外 多数)</div>
+<div class="evidence">
+<div class="evidence-frame" style="position: relative; max-width: 360px;">
+<img class="evidence-img-full" src="captures/desktop-light.png" alt="">
+</div>
+</div>
+<p class="ref"><span class="icon"><svg><use href="#i-external-link"/></svg></span>参考: <a href="https://stripe.com" target="_blank">https://stripe.com</a> <a href="https://linear.app" target="_blank">https://linear.app</a></p>
+</div></div></div></div>
+</section>
+
+<section id="medium">
+  <div class="section-head">
+    <div class="title-block">
+      <div class="icon-wrap" style="color:var(--medium);background:var(--medium-soft);border-color:transparent"><span class="icon"><svg><use href="#i-alert-circle"/></svg></span></div>
+      <h2>改善余地</h2>
+    </div>
+    <span class="meta">4 件</span>
+  </div>
+  <div class="issue-list"><div class="issue medium" data-prompt="issues.json の color_001 を修正してください。
+
+[Issue] true black (#000) を本文に使用
+[Why] OLED で滲み / コントラスト過大で長文読了で目が疲れる。2026 は gray-900 (#111-1a) が標準、ミニマル路線でも黒は微トーン落としが現代的。
+[Fix] 本文色を #111111 / #1a1a1a に置換。h1 だけ #000 残すのは可
+[axis] color / priority medium
+
+該当ファイル/コンポーネントを grep + Edit で直接修正してください。">
+<button type="button" class="issue-copy" title="クリックで修正 prompt をコピー、Claude に paste して即対話"><span class="icon"><svg><use href="#i-clipboard"/></svg></span><span class="copy-text">Claude へ送る</span></button>
+<div class="issue-num">01</div>
+<div class="issue-body-wrap">
+<div class="issue-head">
+<span class="badge"><span class="icon"><svg><use href="#i-alert-circle"/></svg></span>MEDIUM</span>
+<span class="axis-tag">color</span>
+<span class="title"><span class="term" data-tooltip="完全黒 (#000000)、OLED で滲み + 目に痛い、2026 は gray-900 推奨">true black</span> (#000) を本文に使用</span>
+</div>
+<div class="issue-body">
+<p class="why"><span class="term" data-tooltip="有機 EL ディスプレイ、true black の滲みが出やすい">OLED</span> で滲み / コントラスト過大で長文読了で目が疲れる。2026 は <span class="term" data-tooltip="完全黒の代わりに使う最濃 gray (#111-1a)、目に優しい">gray-900</span> (#111-1a) が標準、ミニマル路線でも黒は微トーン落としが現代的。</p>
+<p class="fix">本文色を #111111 / #1a1a1a に置換。h1 だけ #000 残すのは可</p>
+<div class="css-finding">rgb(0, 0, 0) detected</div>
+<div class="evidence">
+<div class="evidence-frame crop" style="width: 480px; max-width: 100%; height: 53px; background-size: 686px 1052px; background-position: -69px -116px; background-image: url('captures/desktop-light.png');">
+<div class="callout">本文 #000</div>
+</div>
+</div>
+<p class="ref"><span class="icon"><svg><use href="#i-external-link"/></svg></span>参考: <a href="https://apple.com/jp/" target="_blank">https://apple.com/jp/</a> <a href="https://stripe.com/jp" target="_blank">https://stripe.com/jp</a></p>
+</div></div></div>
+<div class="issue medium" data-prompt="issues.json の hero_001 を修正してください。
+
+[Issue] Hero に大型 visual がなく、文字中心で 2026 SaaS LP のインパクト弱め
+[Why] Linear / Vercel / Stripe など 2026 SaaS は hero に必ず大型 visual を置く。Sublog は文字 + 小さな App Store ボタンのみで、iPhone モックが scroll 後に出現。Editorial 狙いなら OK だが SaaS としてはコンバージョン弱め。
+[Fix] 案 A: iPhone モック 4 枚を hero 内に移動 (above-the-fold で Brand Promise を即体感) / 案 B: hero に animated GIF / Lottie で OCR→台帳の流れを 3 秒ループ
+[axis] image_density / priority medium
+
+該当ファイル/コンポーネントを grep + Edit で直接修正してください。">
+<button type="button" class="issue-copy" title="クリックで修正 prompt をコピー、Claude に paste して即対話"><span class="icon"><svg><use href="#i-clipboard"/></svg></span><span class="copy-text">Claude へ送る</span></button>
+<div class="issue-num">02</div>
+<div class="issue-body-wrap">
+<div class="issue-head">
+<span class="badge"><span class="icon"><svg><use href="#i-alert-circle"/></svg></span>MEDIUM</span>
+<span class="axis-tag">image_density</span>
+<span class="title"><span class="term" data-tooltip="page 最上部の主訴求ブロック (visual + headline + CTA)">Hero</span> に大型 visual がなく、文字中心で 2026 <span class="term" data-tooltip="SaaS の Landing Page、hero に大型 visual + 強 CTA が定石">SaaS LP</span> のインパクト弱め</span>
+</div>
+<div class="issue-body">
+<p class="why">Linear / Vercel / Stripe など 2026 SaaS は <span class="term" data-tooltip="page 最上部の主訴求ブロック (visual + headline + CTA)">hero</span> に必ず大型 visual を置く。Sublog は文字 + 小さな App Store ボタンのみで、iPhone モックが scroll 後に出現。<span class="term" data-tooltip="雑誌 / 新聞風のレイアウト (typography 主役、visual subdued)">Editorial</span> 狙いなら OK だが SaaS としてはコンバージョン弱め。</p>
+<p class="fix">案 A: iPhone モック 4 枚を <span class="term" data-tooltip="page 最上部の主訴求ブロック (visual + headline + CTA)">hero</span> 内に移動 (<span class="term" data-tooltip="page 上端から最初の 1 画面分、ファーストビュー">above-the-fold</span> で <span class="term" data-tooltip="アプリ名/コピー で謳う core feature が画面で視覚化されているか">Brand Promise</span> を即体感) / 案 B: hero に animated GIF / Lottie で OCR→台帳の流れを 3 秒ループ</p>
+<div class="evidence">
+<div class="evidence-frame crop" style="width: 480px; max-width: 100%; height: 177px; background-size: 480px 737px; background-position: -0px -37px; background-image: url('captures/desktop-light.png');">
+<div class="callout">visual 領域 空白</div>
+</div>
+</div>
+<p class="ref"><span class="icon"><svg><use href="#i-external-link"/></svg></span>参考: <a href="https://linear.app" target="_blank">https://linear.app</a> <a href="https://stripe.com" target="_blank">https://stripe.com</a></p>
+</div></div></div>
+<div class="issue medium" data-prompt="issues.json の imagery_001 を修正してください。
+
+[Issue] 「できること」6 機能カードに icon 不在で視覚リズム弱め
+[Why] 6 つの feature カードが全部テキストのみで、視線が止まる視覚要素がない。スクロール中に「文字の壁」に見える瞬間が生じる。
+[Fix] Lucide / Heroicons (outline) で 6 つ 24px line icon を統一スタイルで配置。色は accent 1 色 (例: #1a73e8 / #5b6cff 等) でリズム作る
+[axis] image_density / priority medium
+
+該当ファイル/コンポーネントを grep + Edit で直接修正してください。">
+<button type="button" class="issue-copy" title="クリックで修正 prompt をコピー、Claude に paste して即対話"><span class="icon"><svg><use href="#i-clipboard"/></svg></span><span class="copy-text">Claude へ送る</span></button>
+<div class="issue-num">03</div>
+<div class="issue-body-wrap">
+<div class="issue-head">
+<span class="badge"><span class="icon"><svg><use href="#i-alert-circle"/></svg></span>MEDIUM</span>
+<span class="axis-tag">image_density</span>
+<span class="title">「できること」6 機能カードに icon 不在で視覚リズム弱め</span>
+</div>
+<div class="issue-body">
+<p class="why">6 つの feature カードが全部テキストのみで、視線が止まる視覚要素がない。スクロール中に「文字の壁」に見える瞬間が生じる。</p>
+<p class="fix"><span class="term" data-tooltip="オープンソース SVG icon set、Feather の後継 (1100+ icons)">Lucide</span> / <span class="term" data-tooltip="Tailwind 公式の SVG icon set (outline / solid 2 style)">Heroicons</span> (outline) で 6 つ 24px line icon を統一スタイルで配置。色は <span class="term" data-tooltip="ブランドの主訴求色 (1-2 色)、CTA やリンクに使う">accent</span> 1 色 (例: #1a73e8 / #5b6cff 等) でリズム作る</p>
+<div class="evidence">
+<div class="evidence-frame crop" style="width: 480px; max-width: 100%; height: 149px; background-size: 511px 784px; background-position: -15px -400px; background-image: url('captures/desktop-light.png');">
+<div class="callout">6 枚すべて icon なし</div>
+</div>
+</div>
+<p class="ref"><span class="icon"><svg><use href="#i-external-link"/></svg></span>参考: <a href="https://lucide.dev" target="_blank">https://lucide.dev</a> <a href="https://heroicons.com" target="_blank">https://heroicons.com</a></p>
+</div></div></div>
+<div class="issue medium" data-prompt="issues.json の space_002 を修正してください。
+
+[Issue] spacing 標準偏差 11.4px (8pt grid 逸脱)
+[Why] section ごとに 18 / 28 / 36px のような半端値が混じり、縦のリズム感が揺らぐ。spacing token を一度敷くと一気に整う。
+[Fix] CSS 変数 :root に --space-2/4/6/8/12/16 を定義、全 padding/margin を変数経由に書き換え
+[axis] whitespace / priority medium
+
+該当ファイル/コンポーネントを grep + Edit で直接修正してください。">
+<button type="button" class="issue-copy" title="クリックで修正 prompt をコピー、Claude に paste して即対話"><span class="icon"><svg><use href="#i-clipboard"/></svg></span><span class="copy-text">Claude へ送る</span></button>
+<div class="issue-num">04</div>
+<div class="issue-body-wrap">
+<div class="issue-head">
+<span class="badge"><span class="icon"><svg><use href="#i-alert-circle"/></svg></span>MEDIUM</span>
+<span class="axis-tag">whitespace</span>
+<span class="title">spacing 標準偏差 11.4px (<span class="term" data-tooltip="全 spacing を 8 の倍数 (4/8/16/24/32/48/64) に揃える設計、リズム感の基盤">8pt grid</span> 逸脱)</span>
+</div>
+<div class="issue-body">
+<p class="why">section ごとに 18 / 28 / 36px のような半端値が混じり、縦のリズム感が揺らぐ。<span class="term" data-tooltip="spacing を CSS 変数で集約したもの (--space-2 等)">spacing token</span> を一度敷くと一気に整う。</p>
+<p class="fix">CSS 変数 :root に --space-2/4/6/8/12/16 を定義、全 padding/margin を変数経由に書き換え</p>
+<div class="css-finding">stdev=11.4 mean=4.6</div>
+<div class="evidence">
+<div class="evidence-frame crop" style="width: 480px; max-width: 100%; height: 157px; background-size: 511px 784px; background-position: -15px -125px; background-image: url('captures/desktop-light.png');">
+<div class="callout">section 間 spacing 揺れ</div>
+</div>
+</div>
+</div></div></div></div>
+</section>
+
+<section id="low">
+  <div class="section-head">
+    <div class="title-block">
+      <div class="icon-wrap"><span class="icon"><svg><use href="#i-info"/></svg></span></div>
+      <h2>細かい指摘</h2>
+    </div>
+    <span class="meta">2 件</span>
+  </div>
+  <div class="issue-list"><div class="issue low" data-prompt="issues.json の color_002 を修正してください。
+
+[Issue] true white (#fff) を background に使用
+[Why] long-form では目の疲労、2026 は gray-50 (#fafafa) / off-white が標準。
+[Fix] body background を #fafafa / #f7f7f7 に。card のみ #ffffff で対比を作る
+[axis] color / priority low
+
+該当ファイル/コンポーネントを grep + Edit で直接修正してください。">
+<button type="button" class="issue-copy" title="クリックで修正 prompt をコピー、Claude に paste して即対話"><span class="icon"><svg><use href="#i-clipboard"/></svg></span><span class="copy-text">Claude へ送る</span></button>
+<div class="issue-num">01</div>
+<div class="issue-body-wrap">
+<div class="issue-head">
+<span class="badge"><span class="icon"><svg><use href="#i-info"/></svg></span>LOW</span>
+<span class="axis-tag">color</span>
+<span class="title"><span class="term" data-tooltip="完全白 (#ffffff)、長文で目が疲れる、2026 は gray-50 推奨">true white</span> (#fff) を background に使用</span>
+</div>
+<div class="issue-body">
+<p class="why">long-form では目の疲労、2026 は <span class="term" data-tooltip="完全白の代わりに使う最薄 gray (#fafafa)、目に優しい">gray-50</span> (#fafafa) / off-white が標準。</p>
+<p class="fix">body background を #fafafa / #f7f7f7 に。card のみ #ffffff で対比を作る</p>
+<div class="css-finding">rgb(255, 255, 255) detected</div>
+
+</div></div></div>
+<div class="issue low" data-prompt="issues.json の modern_001 を修正してください。
+
+[Issue] Dark mode 未対応 (prefers-color-scheme 切替なし)
+[Why] 2026 標準は最低限 prefers-color-scheme: dark で OS 設定追従。Pro 訴求の「広告なし」と並んで dark-mode 対応はミニマル LP では効きが良い。
+[Fix] @media (prefers-color-scheme: dark) で body bg #0b0b0d, fg #e8e8ee に切替 (CSS 変数化済なら 1 ブロックで完結)
+[axis] modernity / priority low
+
+該当ファイル/コンポーネントを grep + Edit で直接修正してください。">
+<button type="button" class="issue-copy" title="クリックで修正 prompt をコピー、Claude に paste して即対話"><span class="icon"><svg><use href="#i-clipboard"/></svg></span><span class="copy-text">Claude へ送る</span></button>
+<div class="issue-num">02</div>
+<div class="issue-body-wrap">
+<div class="issue-head">
+<span class="badge"><span class="icon"><svg><use href="#i-info"/></svg></span>LOW</span>
+<span class="axis-tag">modernity</span>
+<span class="title"><span class="term" data-tooltip="OS の dark 設定に合わせて UI 色を反転する仕組み、2026 標準対応">Dark mode</span> 未対応 (<span class="term" data-tooltip="OS の dark/light 設定を CSS で取得、dark mode 切替の基本">prefers-color-scheme</span> 切替なし)</span>
+</div>
+<div class="issue-body">
+<p class="why">2026 標準は最低限 <span class="term" data-tooltip="OS の dark/light 設定を CSS で取得、dark mode 切替の基本">prefers-color-scheme</span>: dark で OS 設定追従。Pro 訴求の「広告なし」と並んで dark-mode 対応はミニマル LP では効きが良い。</p>
+<p class="fix">@media (<span class="term" data-tooltip="OS の dark/light 設定を CSS で取得、dark mode 切替の基本">prefers-color-scheme</span>: dark) で body bg #0b0b0d, fg #e8e8ee に切替 (CSS 変数化済なら 1 ブロックで完結)</p>
+<div class="css-finding">html.dark でも body background が rgb(255,255,255) のまま</div>
+<div class="evidence">
+<div class="evidence-frame crop" style="--bg-size: 100.00% auto; --bg-pos: -0.00% -0.00%; --ar: 100 / 14; background-image: url('captures/desktop-dark.png');">
+<div class="callout">OS が dark でも白背景のまま</div>
+</div>
+</div>
+</div></div></div></div>
+</section>
+
+<section id="good">
+  <div class="section-head">
+    <div class="title-block">
+      <div class="icon-wrap" style="color:var(--good);background:var(--good-soft);border-color:transparent"><span class="icon"><svg><use href="#i-sparkles"/></svg></span></div>
+      <h2>良かった点</h2>
+    </div>
+    <span class="meta">8 件</span>
+  </div>
+  <blockquote class="pull-quote">「スクショ 1 枚で、サブスクが台帳になる。」 <span class="term" data-tooltip="page 最上部の主訴求ブロック (visual + headline + CTA)">Hero</span> copy が短く強い (15 字以内 + 比喩で具体)</blockquote>
+  <div class="highlight-chips"><div class="chip"><span class="icon-wrap"><span class="icon"><svg><use href="#i-check"/></svg></span></span><span>iPhone モック 4 枚で OCR→台帳の流れを完全視覚化 — <span class="term" data-tooltip="アプリ名/コピー で謳う core feature が画面で視覚化されているか">Brand Promise</span> が <span class="term" data-tooltip="page 最上部の主訴求ブロック (visual + headline + CTA)">hero</span>下で即 visualize</span></div><div class="chip"><span class="icon-wrap"><span class="icon"><svg><use href="#i-check"/></svg></span></span><span>黒×余白ミニマル路線がコピー / visual / footer まで貫徹、ブランド統一感が高い</span></div><div class="chip"><span class="icon-wrap"><span class="icon"><svg><use href="#i-check"/></svg></span></span><span>border-radius が 1 種で統一 (<span class="term" data-tooltip="色 / spacing / radius 等の値を CSS 変数で集約する設計手法">design token</span> の片鱗あり)</span></div><div class="chip"><span class="icon-wrap"><span class="icon"><svg><use href="#i-check"/></svg></span></span><span>プライバシー 3 項目で trust signal を配置 (OCR 端末完結 / カード番号取らない / Apple ID via AdMob)</span></div><div class="chip"><span class="icon-wrap"><span class="icon"><svg><use href="#i-check"/></svg></span></span><span>mobile <span class="term" data-tooltip="画面幅に応じて layout が自動調整される設計">responsive</span> 完成度が高い (横スクロールなし、左右余白も適切)</span></div><div class="chip"><span class="icon-wrap"><span class="icon"><svg><use href="#i-check"/></svg></span></span><span>ナビゲーション 4 項目で integrity 確保 (プライバシー / 利用規約 / 特商法 / サポート)</span></div><div class="chip"><span class="icon-wrap"><span class="icon"><svg><use href="#i-check"/></svg></span></span><span>footer に法人名 + 全権利留保表記、indie でも legal trust 出ている</span></div></div>
+</section>
+
+<section id="refs">
+  <div class="section-head">
+    <div class="title-block">
+      <div class="icon-wrap"><span class="icon"><svg><use href="#i-bookmark"/></svg></span></div>
+      <h2>参考サイト</h2>
+    </div>
+    <span class="meta">2026 基準</span>
+  </div>
+  <div class="refs"><a href="https://linear.app" target="_blank"><span class="icon-wrap"><span class="icon"><svg><use href="#i-external-link"/></svg></span></span><span class="ref-text"><strong>linear.app</strong><span>SaaS hero benchmark — 大型 visual + 強 Hook copy + accent CTA</span></span></a><a href="https://stripe.com/jp" target="_blank"><span class="icon-wrap"><span class="icon"><svg><use href="#i-external-link"/></svg></span></span><span class="ref-text"><strong>stripe.com/jp</strong><span>info hierarchy + spacing token の手本、和文 LP として参考</span></span></a><a href="https://apple.com/jp/" target="_blank"><span class="icon-wrap"><span class="icon"><svg><use href="#i-external-link"/></svg></span></span><span class="ref-text"><strong>apple.com/jp/</strong><span>App Store ボタンの inline embed + 黒系 minimal の現代手本</span></span></a><a href="https://vercel.com" target="_blank"><span class="icon-wrap"><span class="icon"><svg><use href="#i-external-link"/></svg></span></span><span class="ref-text"><strong>vercel.com</strong><span>Inter + Geist フォントスタック + subtle gradient hero の参考</span></span></a></div>
+</section>
+
+<section class="json-section" id="appendix">
+  <div class="section-head">
+    <div class="title-block">
+      <div class="icon-wrap"><span class="icon"><svg><use href="#i-clipboard"/></svg></span></div>
+      <h2>付録 JSON</h2>
+    </div>
+    <span class="meta">Appendix</span>
+  </div>
+  <p class="desc">完全版は <code>issues.json</code>。Claude に「<code>issues.json</code> を読んで重大な指摘から順に修正して」と頼むと改修対話に入れる。</p>
+  <div class="json-wrap">
+    <button type="button" class="json-copy" id="json-copy-btn">Copy</button>
+    <div class="json-block" id="json-block">{
+  "counts": {
+    "high": 2,
+    "medium": 4,
+    "low": 2
+  },
+  "top_3": [
+    {
+      "id": "typo_001",
+      "axis": "typography",
+      "title": "font-family fallback 7 種で chain が冗長",
+      "fix_suggestion": "和文 Zen Kaku Gothic New + 英文 SF Pro/-apple-system + monospace の 3 階層に集約。CSS 変数 (--font-sans / --font-serif / --font-mono) 化"
+    },
+    {
+      "id": "space_001",
+      "axis": "whitespace",
+      "title": "spacing が 17 種、デザイントークン不在",
+      "fix_suggestion": "4pt / 8pt grid の token (4, 8, 16, 24, 32, 48, 64) に集約。CSS 変数 (--space-1 ~ --space-16) で統一"
+    }
+  ]
+}</div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-cta">
+    <a href="issues.json" target="_blank"><span class="icon"><svg><use href="#i-clipboard"/></svg></span>issues.json を開く</a>
+    <a href="#high"><span class="icon"><svg><use href="#i-alert-triangle"/></svg></span>重大な指摘から修正</a>
+    <a href="#refs"><span class="icon"><svg><use href="#i-bookmark"/></svg></span>2026 ベンチマーク参照</a>
+  </div>
+  <div class="footer-credit">
+    Generated by <code>~/.claude/skills/design-review</code> · 2026 design standards
+  </div>
+</footer>
+
+</main>
+</div>
+
+<script>
+(function () {
+  const sidebar = document.getElementById('sidebar');
+  const toggle = sidebar.querySelector('.menu-toggle');
+  const sections = ['overview','cover','axes','high','medium','low','good','refs','appendix']
+    .map(id => document.getElementById(id))
+    .filter(Boolean);
+  const links = Array.from(sidebar.querySelectorAll('nav a[href^="#"]'));
+
+  function applyDefaultOpen() {
+    const mobile = window.matchMedia('(max-width: 960px)').matches;
+    sidebar.dataset.open = mobile ? 'false' : 'true';
+  }
+  applyDefaultOpen();
+  window.addEventListener('resize', applyDefaultOpen);
+
+  toggle && toggle.addEventListener('click', () => {
+    sidebar.dataset.open = sidebar.dataset.open === 'true' ? 'false' : 'true';
+  });
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = '#' + entry.target.id;
+        links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === id));
+      }
+    });
+  }, { rootMargin: '-30% 0% -60% 0%', threshold: 0 });
+  sections.forEach(s => obs.observe(s));
+
+  links.forEach(a => a.addEventListener('click', () => {
+    if (window.matchMedia('(max-width: 960px)').matches) {
+      sidebar.dataset.open = 'false';
+    }
+  }));
+})();
+
+// 色覚 simulation toggle
+(function () {
+  const toolbar = document.querySelector('.cv-toolbar');
+  if (!toolbar) return;
+  const img = document.querySelector('.cover-figure .frame-body img');
+  if (!img) return;
+  toolbar.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-cv]');
+    if (!btn) return;
+    const cv = btn.dataset.cv;
+    toolbar.querySelectorAll('button').forEach(b => b.classList.toggle('active', b === btn));
+    if (cv === 'normal') {
+      img.removeAttribute('data-cv');
+    } else {
+      img.setAttribute('data-cv', cv);
+    }
+  });
+})();
+
+// Display mode toggle (Fit / Full / Mobile)
+(function () {
+  const toolbar = document.querySelector('.display-toolbar');
+  if (!toolbar) return;
+  const fig = document.querySelector('.cover-figure');
+  if (!fig) return;
+  toolbar.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-display]');
+    if (!btn) return;
+    const mode = btn.dataset.display;
+    toolbar.querySelectorAll('button').forEach(b => b.classList.toggle('active', b === btn));
+    fig.setAttribute('data-display', mode);
+  });
+})();
+
+// JSON Copy
+(function () {
+  const btn = document.getElementById('json-copy-btn');
+  const block = document.getElementById('json-block');
+  if (!btn || !block) return;
+  btn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(block.textContent.trim());
+      const orig = btn.textContent;
+      btn.textContent = '✓ Copied';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1600);
+    } catch (e) {
+      btn.textContent = 'Failed';
+    }
+  });
+})();
+
+// Evidence frame zoom toggle (click で max-width 解除)
+(function () {
+  document.querySelectorAll('.evidence-frame').forEach(frame => {
+    frame.addEventListener('click', () => {
+      const cur = frame.style.maxWidth;
+      frame.style.maxWidth = cur === 'none' ? '' : 'none';
+      frame.style.cursor = cur === 'none' ? 'zoom-in' : 'zoom-out';
+    });
+  });
+})();
+
+// Issue copy : data-prompt を clipboard へ (Claude に paste で即修正対話)
+(function () {
+  document.querySelectorAll('.issue-copy').forEach(btn => {
+    const label = btn.querySelector('.copy-text');
+    const original = label ? label.textContent : '';
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const issue = btn.closest('.issue');
+      if (!issue) return;
+      const prompt = issue.dataset.prompt || '';
+      try {
+        await navigator.clipboard.writeText(prompt);
+        btn.classList.add('copied');
+        if (label) label.textContent = 'コピー済';
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          if (label) label.textContent = original;
+        }, 1800);
+      } catch (_) {
+        btn.style.color = 'var(--high)';
+        if (label) label.textContent = '失敗';
+      }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

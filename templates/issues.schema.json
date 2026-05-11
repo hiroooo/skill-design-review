@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/hiroooo/skill-design-review/blob/main/templates/issues.schema.json",
+  "title": "design-review issues report",
+  "type": "object",
+  "required": ["schema_version", "generated_at", "platform", "mode", "level", "scores", "issues"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "target": {
+      "type": "object",
+      "description": "対象の identification (URL / app bundle id / 画像パス)",
+      "properties": {
+        "url": { "type": "string" },
+        "bundle_id": { "type": "string" },
+        "screen_names": { "type": "array", "items": { "type": "string" } },
+        "captures_dir": { "type": "string" },
+        "hero_screenshot": {
+          "type": "string",
+          "description": "report.html の hero section に埋め込む LP/アプリ画面の代表 PNG 相対パス (例: captures/desktop-light.png)。share-x.png 切り出しの素材も兼ねる"
+        },
+        "label": {
+          "type": "string",
+          "description": "hero に表示する短い対象名 (例: Sublog LP / 集中カプセル v1.0.1)"
+        }
+      }
+    },
+    "platform": { "enum": ["web", "ios", "android", "image"] },
+    "mode": { "enum": ["general", "diff"] },
+    "level": { "enum": ["strict", "normal", "friendly"] },
+    "diff_target": {
+      "type": "object",
+      "description": "mode=diff のときの目標デザイン (Figma URL or PNG)",
+      "properties": {
+        "figma_url": { "type": "string" },
+        "target_image_path": { "type": "string" }
+      }
+    },
+    "scores": {
+      "type": "object",
+      "required": ["overall", "readability", "hierarchy", "whitespace", "typography", "color", "image_density", "modernity", "consistency", "accessibility"],
+      "properties": {
+        "overall":       { "type": "integer", "minimum": 0, "maximum": 100 },
+        "readability":   { "type": "integer", "minimum": 0, "maximum": 100 },
+        "hierarchy":     { "type": "integer", "minimum": 0, "maximum": 100 },
+        "whitespace":    { "type": "integer", "minimum": 0, "maximum": 100 },
+        "typography":    { "type": "integer", "minimum": 0, "maximum": 100 },
+        "color":         { "type": "integer", "minimum": 0, "maximum": 100 },
+        "image_density": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "modernity":     { "type": "integer", "minimum": 0, "maximum": 100 },
+        "consistency":   { "type": "integer", "minimum": 0, "maximum": 100 },
+        "accessibility": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "brand_promise": { "type": "integer", "minimum": 0, "maximum": 100 }
+      }
+    },
+    "axis_comments": {
+      "type": "object",
+      "description": "各軸の 1 行コメント (40-80 字、なぜそのスコアか / 何が良くて何がダサいか)。report.html の軸別評価セクションと hero bar の hover で使う",
+      "properties": {
+        "readability":   { "type": "string" },
+        "hierarchy":     { "type": "string" },
+        "whitespace":    { "type": "string" },
+        "typography":    { "type": "string" },
+        "color":         { "type": "string" },
+        "image_density": { "type": "string" },
+        "modernity":     { "type": "string" },
+        "consistency":   { "type": "string" },
+        "accessibility": { "type": "string" },
+        "brand_promise": { "type": "string" }
+      }
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "axis", "priority", "title", "evidence", "fix_suggestion"],
+        "properties": {
+          "id": { "type": "string", "description": "axis 略 + 連番 e.g. typo_001" },
+          "axis": {
+            "enum": [
+              "readability", "hierarchy", "whitespace", "typography",
+              "color", "image_density", "modernity", "consistency",
+              "accessibility", "hero", "cta", "responsive", "hig",
+              "tap_target", "dark_mode", "dynamic_type", "material",
+              "diff", "other"
+            ]
+          },
+          "priority": { "enum": ["high", "medium", "low"] },
+          "effort": {
+            "enum": ["quick", "moderate", "major"],
+            "description": "修正コスト: quick (15分以内 / CSS 1 ヶ所) / moderate (1-2h / 数ファイル) / major (半日以上 / 構造変更)"
+          },
+          "title": { "type": "string", "description": "1 行説明 (40 字以内推奨)" },
+          "evidence": {
+            "type": "object",
+            "description": "根拠となる screenshot とロジック",
+            "properties": {
+              "screenshot": { "type": "string", "description": "captures/ 内の相対パス" },
+              "crop": {
+                "type": "array",
+                "items": { "type": "number" },
+                "minItems": 4,
+                "maxItems": 4,
+                "description": "[x, y, width, height]"
+              },
+              "css_finding": { "type": "string" },
+              "rule_ref": { "type": "string", "description": "rules/*.md 内の参照" }
+            }
+          },
+          "why_dasai": { "type": "string", "description": "なぜダサい / 古い / 見づらいか" },
+          "fix_suggestion": { "type": "string", "description": "改修方針 (具体値推奨)" },
+          "reference_examples": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "参考 URL (Linear / Stripe / Apple 等)"
+          },
+          "ref_doc": { "type": "string", "description": "WCAG 1.4.8 / HIG Typography 等" },
+          "component_hint": {
+            "type": "string",
+            "description": "Web=querySelector / iOS=View 名候補。後段の修正対話で使う"
+          }
+        }
+      }
+    },
+    "highlights": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "良い点ハイライト (friendly モードで増量)"
+    },
+    "modern_references": {
+      "type": "array",
+      "description": "改修後イメージとして提示する 2026 ベンチマーク",
+      "items": {
+        "type": "object",
+        "required": ["url", "why"],
+        "properties": {
+          "url": { "type": "string" },
+          "why": { "type": "string" }
+        }
+      }
+    },
+    "audit_config": {
+      "type": "object",
+      "description": "次回 re-run 用",
+      "properties": {
+        "viewports": { "type": "array", "items": { "type": "string" } },
+        "screens": { "type": "array", "items": { "type": "string" } },
+        "focus_axes": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}
