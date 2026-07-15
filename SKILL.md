@@ -199,7 +199,7 @@ Web の CSS が拾える項目は `scripts/analyze-css.mjs captures/styles.json`
 
 #### Issue 構造化
 
-`issues.schema.json` に従って 1 issue ごとに以下を埋める:
+`templates/issues.schema.json` に従って 1 issue ごとに以下を埋める:
 
 ```jsonc
 {
