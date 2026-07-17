@@ -19,6 +19,9 @@
 - **Dark mode**: OS の prefers-color-scheme に追従
 - **PDF 印刷対応**: ⌘P でそのまま PDF 化、page-break 制御込み
 - **Severity effort chip**: 修正コスト (quick / moderate / major) で着手順を判断
+- **実行時チェックリスト**: platform 別ベストプラクティス (Web / iOS / Android) + 過去指摘由来の再発防止リストを毎回全項目判定。fail は issue として必ず報告
+- **学習する再発防止リスト**: レビュー後にユーザーから新しい指摘を受けると `rules/45-recurrence.md` に自動追記され、次回から検査対象になる
+- **project 固有チェックリスト**: 対象 project の `.claude/design-checklist.md` があれば自動読込
 
 ---
 
@@ -185,6 +188,12 @@ open ~/.claude/skills/design-review/examples/sample-report/report.html
 | `rules/25-brand-promise.md` | ブランド約束 (indie アプリの盲点) |
 | `rules/26-nielsen-heuristics.md` | Nielsen 10 (strict mode) |
 | `rules/29-mobile-onehand.md` | Mobile thumb zone / one-hand reach |
+| `rules/40-checklist-web.md` | Web 実行時チェックリスト (pass/fail 判定) |
+| `rules/41-checklist-ios.md` | iOS 実行時チェックリスト |
+| `rules/42-checklist-android.md` | Android 実行時チェックリスト |
+| `rules/45-recurrence.md` | 過去指摘由来の再発防止リスト (レビュー後に自動追記で成長) |
+
+project 固有の基準は skill 側ではなく、対象 project の `.claude/design-checklist.md` に置くと実行時に自動で読み込まれます。
 
 ---
 

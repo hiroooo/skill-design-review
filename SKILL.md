@@ -2,7 +2,7 @@
 name: design-review
 description: Web / iOS / Android の UI を multi-axis でスコアリングし、フォント/余白/画像密度/モダン度の「ダサさ」シグナルを機械的に拾って md+html レポート化する design audit skill。general (一般フィードバック) と diff (目標デザインとの差分) の 2 モード × strict/normal/friendly の 3 レベル。レビュー結果は issues.json に構造化して残し、後続の Claude 修正対話に渡しやすい形で出力する。Use when the user asks for design review, UI audit, ダサさチェック, デザインレビュー, design feedback, 'デザイン見て', or runs /design-review.
 metadata:
-  version: 1.0.0
+  version: 1.1.0
 allowed-tools: [Read, Write, Edit, Glob, Grep, Bash, AskUserQuestion, WebFetch, WebSearch]
 ---
 
@@ -188,6 +188,32 @@ LP / hero 専用追加 (Web 中心):
 
 Web の CSS が拾える項目は `scripts/analyze-css.mjs captures/styles.json` で機械集計、それ以外と iOS は Vision で判定。
 
+#### チェックリスト検査 (必須、level 不問)
+
+platform に応じた実行時チェックリストを読み、**全項目を pass / fail / n-a で判定**する:
+
+- Web → `rules/40-checklist-web.md`
+- iOS → `rules/41-checklist-ios.md`
+- Android → `rules/42-checklist-android.md`
+- 全 platform 共通 → `rules/45-recurrence.md` (過去レビュー・ユーザー指摘由来の**再発防止リスト。最優先で通す** — ここの fail は「二度目の指摘」を意味する)
+
+さらに project 固有チェックリストを自動読込する (app-review の `_review-checklist.md` パターン踏襲):
+
+```bash
+# git top と (apps/<name> 配下なら) APP_ROOT の 2 箇所を確認
+for D in "$GIT_TOP" "$APP_ROOT"; do
+  [ -n "$D" ] && [ -f "$D/.claude/design-checklist.md" ] && echo "CHECKLIST: $D/.claude/design-checklist.md"
+done
+```
+
+存在すれば Read して検査対象に追加する (なければ黙ってスキップ、ユーザーに作成を促さない)。
+
+判定ルール:
+- **fail は必ず issue 化**して issues.json に載せる。`axis` は最も近い既存軸の内部 ID、`ref_doc` はチェックリスト項目 ID (例: `rules/45-recurrence.md#RC-03`)
+- **level が normal / friendly でもチェックリスト fail は省略しない** (priority は項目ごとに判断してよいが、報告からは落とさない)
+- スクショ / CSS 統計から判定できない項目は n-a としてスキップする (推測で pass / fail を付けない)
+- pass / n-a はレポートに列挙しない (fail のみ issue として出す)
+
 #### 軸ごと 1 行コメント (`axis_comments`)
 
 10 軸それぞれで **40-80 字の 1 行コメント** を生成し `issues.json.axis_comments` に保存する。スコアの数字だけでは読者に伝わらない「なぜそのスコアか」「何が良くて何がダサいか」を端的に書く。`report.html` の軸別評価セクションと markdown report 両方で表示される。
@@ -337,6 +363,19 @@ open "$OUT_DIR/report.html"
 最後に以下 2 点を添える:
 - 「**`report.md` の high 指摘から優先順に直してほしい**と言ってもらえれば、issues.json を読みつつ Edit で改修に入れます」(これが /design-review-fix の代わり)
 - 「X 投稿用画像は `$OUT_DIR/share-x.png` (1200×675 16:9)、`report.html` の `#hero` をそのまま切り出したもの」
+
+### Phase 6 — 学びの追記 (レビュー後、自動)
+
+レポート提示後にユーザーから **チェックリストにない新しいデザイン指摘** (レビュー結果への訂正・却下・追加指摘) を受けたら、その対話の中で:
+
+1. `rules/45-recurrence.md` を読み、同義の既存項目がないか確認する
+2. なければ既存フォーマット (`RC-XX / チェック内容 / pass 基準 / platform / 出典 / 追加日`) で 1 項目追記する
+3. 「チェックリストに追記した: **RC-XX** <内容>」と 1 行だけ報告する (許可は取らない、追記は非破壊)
+
+分岐:
+- 既存項目と同義 → 追記せず、既存項目の出典欄に今回の事例 (パス or 日付) を追加
+- そのアプリ固有で汎用化できない指摘 (ブランド決裁・特定画面の仕様など) → rules/45 ではなく対象 project の `.claude/design-checklist.md` に追記 (なければ作成してよい)
+- ユーザーが「この指摘は違う」とチェックリスト項目自体を否定した → 該当項目を削除 or pass 基準を修正
 
 ---
 
