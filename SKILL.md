@@ -93,13 +93,16 @@ echo "OUT_DIR=$OUT_DIR"
 
 #### Web キャプチャ (Playwright MCP, main session 必須)
 
-3 viewport × Light/Dark = 6 枚を `captures/` に保存:
+3 viewport × Light/Dark + 広幅 1 枚 = 7 枚を `captures/` に保存:
 
 | viewport | size | ファイル名 |
 |---|---|---|
 | mobile | 375 × 812 | `mobile-light.png` / `mobile-dark.png` |
 | tablet | 768 × 1024 | `tablet-light.png` / `tablet-dark.png` |
 | desktop | 1440 × 900 | `desktop-light.png` / `desktop-dark.png` |
+| desktop-wide | 1920 × 1080 | `desktop-wide-light.png` (light のみで可、**省略禁止**) |
+
+**整列の機械判定 (Web 必須)**: スクショ目視だけで整列を pass にしない。`browser_evaluate` で主要セクション (ヘッダー/信頼系バナー/ナビ/h1/フィルタ/最初のカード/フッター) の `getBoundingClientRect().left` を 1440 / 1920 / 2560 の 3 幅で dump し、**視覚左端の最大差 2px 以内**を判定する (rules/45 RC-29)。2026-07-23 ai-jirei で 1440 のみ検査→広幅の左端整列ズレ (テキスト列と枠カード列の 24px 混在) を本番ユーザーに指摘された事故由来。
 
 各 viewport で:
 1. `mcp__playwright__browser_resize` で size 設定
@@ -193,6 +196,7 @@ Web の CSS が拾える項目は `scripts/analyze-css.mjs captures/styles.json`
 platform に応じた実行時チェックリストを読み、**全項目を pass / fail / n-a で判定**する:
 
 - Web → `rules/40-checklist-web.md`
+- Web (実ブラウザで開けているときのみ) → `rules/43-checklist-web-perf.md` (Core Web Vitals = LCP / CLS / INP の実測。PNG 直渡しなら全項目 n-a)
 - iOS → `rules/41-checklist-ios.md`
 - Android → `rules/42-checklist-android.md`
 - 全 platform 共通 → `rules/45-recurrence.md` (過去レビュー・ユーザー指摘由来の**再発防止リスト。最優先で通す** — ここの fail は「二度目の指摘」を意味する)

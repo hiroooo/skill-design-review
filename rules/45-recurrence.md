@@ -40,7 +40,7 @@
 
 ## 単発だが影響大 (reject 歴・事故由来)
 
-- [ ] **RC-19** モバイル幅 (390px 等) で footer / nav 等の要素が欠落・余白ゼロになっていないか (デスクトップ幅だけで検証しない) — pass基準: 390 / 1280 / 2000px の 3 幅で同一要素の余白が保持 | platform: web | **再発あり** (kotesage v7 白帯バグと同型の再発と明記) | 出典: apps/kotesage/.scratch/design-review-20260716-0000 (cons_001/a11y_001) | 追加日: 2026-07-17
+- [ ] **RC-19** モバイル幅 (390px 等) で footer / nav 等の要素が欠落・余白ゼロになっていないか (デスクトップ幅だけで検証しない) — pass基準: 390 / 1280 / 2000px の 3 幅で同一要素の余白が保持 | platform: web | **再発あり** (kotesage v7 白帯バグと同型の再発と明記) | 出典: apps/kotesage/.scratch/design-review-20260716-0000 (cons_001/a11y_001); career/caio/提出用/_design-review (2026-09-09、390pxでheader navと固定DRAFTバッジが重なり文字が読めなくなる新パターン) | 追加日: 2026-07-17
 - [ ] **RC-22** 固定 pt でなく相対フォントサイズ (Dynamic Type) に対応しているか — pass基準: `.font(.custom(..., relativeTo:))` または `@ScaledMetric` 使用 (= rules/11 Dynamic Type と統合判定) | platform: ios | 出典: apps/mystery-adv (acc_001) | 追加日: 2026-07-17
 - [ ] **RC-23** 価格表記が localizedPriceString 等で動的取得されているか (USD/JPY 等の hardcode でないか) — pass基準: CTA ラベルにハードコード価格文字列がない | platform: ios | **ASC 2.3.7 reject 歴と直結** | 出典: apps/kireilens (color_001) | 追加日: 2026-07-17
 - [ ] **RC-24** 生成画像 / バナーで要素が画面外にはみ出て見切れていないか (グリッド下段切れ・tag overflow 等) — pass基準: Vision 目視で overflow 検知ゼロ | platform: image | 出典: memory feedback-image-design-review-gate.md | 追加日: 2026-07-17
@@ -51,3 +51,10 @@
 ## メタパターン (レビュー運用そのもの)
 
 - [ ] **RC-28** 同一対象の過去 design-review で WARN / issue になった項目 (icon 不在・dark mode 等) が未解消のまま放置されていないか — pass基準: 対象の過去 `design-review-*/issues.json` があれば Read し、同一 issue が解消済みまたは「low で保留」の合意記録あり。**未解消の再発は priority high で再掲する** | platform: all | **再発あり** (sublog 4 回 / shirowalk 3 回 / kotesage 2 回で横断確認) | 出典: 各 .scratch/design-review-*/issues.json | 追加日: 2026-07-17
+
+## 2026-07-23 ai-jirei.com 本番ユーザー指摘由来
+
+- [ ] **RC-29** 主要セクション（ヘッダー/信頼帯/ナビ/h1/フィルタ/カード/フッター）の視覚左端が一直線か — pass基準: 1440 / 1800 / 2560px の 3 幅で視覚左端の最大差 2px 以内（「素のテキスト列」と「枠カード列」の 2 本線化を検出。1440 だけでは角丸に紛れて見逃す） | platform: web | **本番ユーザー指摘** | 出典: ai-jirei.com (コンテナ+24px と +0px の混在、レビューは 1440 のみで見逃し) | 追加日: 2026-07-23
+- [ ] **RC-30** 状態依存 UI（「すべて解除」「N件選択中」等）が空状態でも常時表示されていないか — pass基準: フィルタ未適用・未選択の初期状態スクショで該当リンク/ボタンが非表示 | platform: web | **本番ユーザー指摘** | 出典: ai-jirei.com (「すべて解除」が未適用時も浮遊表示) | 追加日: 2026-07-23
+- [ ] **RC-31** 検索窓とフィルタ/タグが視覚的に一体のブロックか + 長いページでスクロール後も検索に到達できるか (sticky 化等) — pass基準: 検索とフィルタが同一ブロック内 / スクロール中も検索手段が viewport 内に存在 | platform: web | **本番ユーザー指摘** | 出典: ai-jirei.com (検索とタグ絞り込みの泣き別れ + スクロール後に検索へ戻れない) | 追加日: 2026-07-23
+- [ ] **RC-32** ファセット (タグ等) の表示が実データの種類数に対して不当に切り詰められていないか — pass基準: 実データのファセット種類数を機械集計し、表示数との乖離に合理的説明 (件数閾値+「もっと見る」等) がある | platform: web | **本番ユーザー指摘** | 出典: ai-jirei.com (データ115種のうち上位12個のみ表示、Gemini 等が埋没) | 追加日: 2026-07-23
