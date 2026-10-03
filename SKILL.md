@@ -8,7 +8,7 @@ allowed-tools: [Read, Write, Edit, Glob, Grep, Bash, AskUserQuestion, WebFetch, 
 
 # design-review
 
-Web / モバイルアプリの UI を Claude にレビューさせる skill。明らかなバグ / 見づらさ / フォント・余白・画像密度のダサさ / モダン度低下を **9 + α 軸 × 0-100 スコア** + **ダサさシグナル 5 カテゴリ** で評価し、`report.md` + `report.html` + `issues.json` を吐く。後続の修正対話に乗せやすい構造で残すのがゴール。
+Web / モバイルアプリの UI を Claude にレビューさせる skill。明らかなバグ / 見づらさ / フォント・余白・画像密度のダサさ / モダン度低下を **10 軸 × 0-100 スコア** + **ダサさシグナル検査** で評価し、`report.md` + `report.html` + `issues.json` を吐く。後続の修正対話に乗せやすい構造で残すのがゴール。
 
 ## いつ使うか
 
@@ -147,7 +147,7 @@ CSS 系統計用に `mcp__playwright__browser_evaluate` で computed styles を 
 
 #### スコア軸 (`rules/00-axes-common.md` 参照)
 
-共通 9 軸 (内部 ID は英語、**ユーザー報告は必ず日本語軸名で**):
+共通 10 軸 (内部 ID は英語、**ユーザー報告は必ず日本語軸名で**):
 
 | # | 内部 ID | 日本語軸名 (報告時) | 内容 |
 |---|---|---|---|
@@ -180,7 +180,7 @@ LP / hero 専用追加 (Web 中心):
 
 #### ダサさシグナル検査
 
-6 カテゴリの rules ファイルを読み、各シグナルに対して **検出可否 + 根拠** を判定:
+次の rules ファイルを読み、各シグナルに対して **検出可否 + 根拠** を判定:
 - `rules/20-dasai-typography.md`
 - `rules/21-dasai-spacing.md` (S11 chrome 占有率, S12 above-the-fold, **S13 container 幅とコンテンツ密度の不一致**)
 - `rules/22-dasai-imagery.md` (S12 Material 既製 icon overuse)
@@ -365,7 +365,7 @@ open "$OUT_DIR/report.html"
 ```
 
 最後に以下 2 点を添える:
-- 「**`report.md` の high 指摘から優先順に直してほしい**と言ってもらえれば、issues.json を読みつつ Edit で改修に入れます」(これが /design-review-fix の代わり)
+- 「**`report.md` の high 指摘から優先順に直してほしい**と言ってもらえれば、issues.json を読みつつ Edit で改修に入れます」
 - 「X 投稿用画像は `$OUT_DIR/share-x.png` (1200×675 16:9)、`report.html` の `#hero` をそのまま切り出したもの」
 
 ### Phase 6 — 学びの追記 (レビュー後、自動)
