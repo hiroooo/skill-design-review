@@ -22,11 +22,13 @@ Web / モバイルアプリの UI を Claude にレビューさせる skill。�
 
 | Skill | 領域 | この skill との関係 |
 |---|---|---|
-| `page-cro` | コンバージョン軸 | 直交補完。design-review → page-cro 順で使う |
+| `page-cro`（2026-10-17 時点 off） | コンバージョン軸 | 直交補完。design-review → page-cro 順で使う |
 | `frontend-design` | 実装コード生成 | review 結果を渡して改修に使う |
 | `copywriting` | 文言 | 直交補完 |
 | Apple plugin `ios-design-consultant` | "どこに置く" 事前相談 | こちらは事後 audit |
 | `iap-promo-image` | IAP 画像 1 枚生成 | template + render パターンを流用 |
+
+**使い分け**: 本 skill は採点・ダサさ検出・issues.json 出力まで。受賞級に作り込む反復は `award-polish`、操作感（速さ・手数）の採点は `ux-score`。
 
 ## 重要な前提 (起動前に確認)
 
