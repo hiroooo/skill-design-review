@@ -241,7 +241,7 @@ done
   "title": "フォント 4 種混在で雑多",
   "evidence": {
     "screenshot": "captures/desktop-light.png",
-    "crop": [120, 340, 480, 540],
+    "crop": [8.3, 37.8, 33.3, 60.0],   // ⚠️ 画像に対する % [x, y, w, h]（0-100）。ピクセルで書くと render-report.sh が画像を枠外へ飛ばし、該当箇所が空白になる（2026-10-28 ミマチガイで発生）
     "css_finding": "font-family unique=4 on hero"
   },
   "why_dasai": "2026 のモダン LP は 2-3 種で統一が定石",

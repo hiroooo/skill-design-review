@@ -101,7 +101,7 @@
                 "items": { "type": "number" },
                 "minItems": 4,
                 "maxItems": 4,
-                "description": "[x, y, width, height]"
+                "description": "[x, y, width, height] を画像に対する % (0-100) で書く。ピクセルは不可（render-report.sh が % として読む）"
               },
               "css_finding": { "type": "string" },
               "rule_ref": { "type": "string", "description": "rules/*.md 内の参照" }
